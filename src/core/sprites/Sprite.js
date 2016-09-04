@@ -3,6 +3,7 @@ var math = require('../math'),
     Container = require('../display/Container'),
     utils = require('../utils'),
     CONST = require('../const'),
+    Geometry = require('../display/Geometry'),
     tempPoint = new math.Point();
 
 /**

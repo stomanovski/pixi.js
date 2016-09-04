@@ -89,6 +89,48 @@ FilterManager.prototype.pushFilter = function(target, filters)
     {//jshint ignore:line
 
         // TODO we should fit the rect around the transform..
+        var dest = filterData.stack[0].destinationFrame;
+        var tran = filterData.stack[0].renderTarget.transform;
+
+        var p1 = tran.applyInverse(new PIXI.Point(sourceFrame.left, sourceFrame.top));
+        var p2 = tran.applyInverse(new PIXI.Point(sourceFrame.right, sourceFrame.top));
+        var p3 = tran.applyInverse(new PIXI.Point(sourceFrame.right, sourceFrame.bottom));
+        var p4 = tran.applyInverse(new PIXI.Point(sourceFrame.left, sourceFrame.bottom));
+
+        var left = Math.min(p1.x, p2.x, p3.x, p4.x);
+        var right = Math.max(p1.x, p2.x, p3.x, p4.x);
+
+        var top = Math.min(p1.y, p2.y, p3.y, p4.y);
+        var bottom = Math.max(p1.y, p2.y, p3.y, p4.y);
+
+        sourceFrame.x = left
+        sourceFrame.y = top
+
+        sourceFrame.width = right - left;
+        sourceFrame.height = bottom - top;
+
+        var p1 = tran.applyInverse(new PIXI.Point(dest.left, dest.top));
+        var p2 = tran.applyInverse(new PIXI.Point(dest.right, dest.bottom));
+
+        if(sourceFrame.x < p1.x)
+        {
+            sourceFrame.x = p1.x;
+        }
+
+        if(sourceFrame.y < p1.y)
+        {
+            sourceFrame.y = p1.y;
+        }
+
+        if(sourceFrame.width > p2.x)
+        {
+            sourceFrame.width = p2.x;
+        }
+
+        if(sourceFrame.height > p2.y)
+        {
+            sourceFrame.height = p2.y;
+        }
 
     }
     else

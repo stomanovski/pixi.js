@@ -469,6 +469,51 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     return this;
 };
 
+WebGLRenderer.prototype.bindGeometry = function (geometry)
+{
+    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID]
+              || this.initGeometryVAO(geometry);
+
+    //if(geometry.dirtyTick != vao.dirtyTick)
+    //TODO - optimise later!
+    for (var i in geometry.attributes)
+    {
+        let buffer = geometry.attributes[i].buffer;
+
+        if(!buffer._glBuffers[this.CONTEXT_UID])
+        {
+            buffer._glBuffers[this.CONTEXT_UID] = new
+        }
+        attribute.buffer.update();
+    }
+
+    vao.bind();
+}
+
+WebGLRenderer.prototype.initGeometryVAO = function (geometry)
+{
+    var vao = this.createVao();
+
+    vao.addIndexBuffer(geometry.indexBuffer);
+
+    for (var i in geometry.attributes)
+    {
+        let attribute = geometry.attributes[i];
+        let buffer = attribute.buffer;
+
+        if(!buffer._glBuffers[this.CONTEXT_UID])
+        {
+            buffer._glBuffers[this.CONTEXT_UID] = glCore.Buffer.create();
+        }
+        // need to know the shader..
+        vao.addAttribute(geometry.indexBuffer);
+    };
+
+    geometry.glVertexArrayObjects[this.CONTEXT_UID ] = vao;
+
+    return vao;
+}
+
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);

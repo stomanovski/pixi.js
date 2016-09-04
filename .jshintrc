@@ -11,7 +11,7 @@
     // them if you want to allow only a safe subset of JavaScript, very
     // useful when your codebase is shared with a big number of developers
     // with different skill levels.
-
+    "esversion": 6,
     "bitwise"       : false,    // Disallow bitwise operators (&, |, ^, etc.).
     "camelcase"     : true,     // Force all variable names to use either camelCase or UPPER_CASE.
     "curly"         : true,     // Require {} for every new block or scope.
