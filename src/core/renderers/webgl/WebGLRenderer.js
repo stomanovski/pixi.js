@@ -469,33 +469,56 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     return this;
 };
 
+
 WebGLRenderer.prototype.bindGeometry = function (geometry)
 {
-    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID]
-              || this.initGeometryVAO(geometry);
+    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
+    vao.bind();
+
+    // upload index buffer..
+    geometry.indexBuffer.buffer._glBuffers[this.CONTEXT_UID].upload(geometry.indexBuffer.buffer.data);
+
 
     //if(geometry.dirtyTick != vao.dirtyTick)
     //TODO - optimise later!
     for (var i in geometry.attributes)
     {
         let buffer = geometry.attributes[i].buffer;
+        let glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
-        if(!buffer._glBuffers[this.CONTEXT_UID])
-        {
-            buffer._glBuffers[this.CONTEXT_UID] = new
-        }
-        attribute.buffer.update();
+        //TODO//
+        //only upload what changed!
+        glBuffer.upload(buffer.data, 0);
     }
 
-    vao.bind();
+};
+
+WebGLRenderer.prototype.unbindGeometry = function (geometry)
+{
+    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
+    vao.unbind();
+
 }
 
 WebGLRenderer.prototype.initGeometryVAO = function (geometry)
 {
-    var vao = this.createVao();
+    const gl = this.gl;
 
-    vao.addIndexBuffer(geometry.indexBuffer);
+    let vao = this.createVao();
 
+    //first update the index buffer..
+    let indexBuffer = geometry.indexBuffer;
+    let glIndexbuffer = indexBuffer.buffer._glBuffers[this.CONTEXT_UID];
+
+    if(!glIndexbuffer)
+    {
+        glIndexbuffer = indexBuffer.buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, indexBuffer.buffer.data);
+        vao.addIndex(glIndexbuffer);
+    }
+
+    var map = geometry.generateAttributeLocations();
+
+    //next update the attributes buffer..
     for (var i in geometry.attributes)
     {
         let attribute = geometry.attributes[i];
@@ -503,21 +526,33 @@ WebGLRenderer.prototype.initGeometryVAO = function (geometry)
 
         if(!buffer._glBuffers[this.CONTEXT_UID])
         {
-            buffer._glBuffers[this.CONTEXT_UID] = glCore.Buffer.create();
+            buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
         }
+
         // need to know the shader..
-        vao.addAttribute(geometry.indexBuffer);
-    };
+        // or DO we... NOPE!
+        // console.log(buffer._glBuffers[this.CONTEXT_UID], map[i])
+        //  console.log(map)
+        var glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+        //console.log(glBuffer)
+        vao.addAttribute(glBuffer, {
+            size:attribute.size,
+            location:map[i]
+        },  gl.FLOAT, false, attribute.stride, attribute.start);
+    }
 
     geometry.glVertexArrayObjects[this.CONTEXT_UID ] = vao;
 
     return vao;
-}
+};
+
 
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);
 };
+
+
 
 /**
  * Resets the WebGL state so you can render things however you fancy!

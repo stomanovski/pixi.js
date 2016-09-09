@@ -9,11 +9,14 @@ class Geometry
  		this.indexBuffer = null;
 
  		this.glVertexArrayObjects = [];
+
+
   	}
 
   	addAttribute(id, attribute)
   	{
   		this.attributes[id] = attribute;
+
   		return this;
   	}
 
@@ -23,16 +26,34 @@ class Geometry
   		return this;
   	}
 
-  	upload()
+
+
+  	generateAttributeLocations()
   	{
-  		// gl uploading..
+		let array = [];
+
+  		for (var i in this.attributes)
+  		{
+  			array.push(i);
+  		}
+
+  		array.sort();
+  		//array.reverse();
+
+  		let map = {};
+
+  		for (i = 0; i < array.length; i++)
+  		{
+  			map[array[i]] = i;
+  		}
+
+  		return map;
   	}
 
   	destroy()
   	{
 
   	}
-
 }
 
 module.exports = Geometry;

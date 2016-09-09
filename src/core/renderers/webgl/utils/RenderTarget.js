@@ -48,7 +48,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {number[]}
      */
-    this.clearColor = [0, 0, 0, 0];
+    this.clearColor = [1, 0, 0, 1];
 
     /**
      * The size of the object as a rectangle

@@ -1,6 +1,9 @@
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
     Shader = require('./webgl/MeshShader'),
+    Geometry = require('../core/display/geometry/Geometry'),
+    Buffer = require('../core/display/geometry/Buffer'),
+    Attribute = require('../core/display/geometry/Attribute'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
 
@@ -52,6 +55,17 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      */
     //  TODO auto generate this based on draw mode!
     this.indices = indices || new Uint16Array([0, 1, 3, 2]);
+
+    this.positionBuffer = Buffer.from(this.vertices);
+    this.uvBuffer = Buffer.from(this.uvs);
+    this.indexBuffer = Buffer.from(this.indices);
+
+
+    this.geometry = new Geometry();
+    this.geometry.addAttribute('aVertexPosition', Attribute.from(this.positionBuffer) );
+    this.geometry.addAttribute('aTextureCoord', Attribute.from(this.uvBuffer) );
+    this.geometry.addIndex( Attribute.from(this.indexBuffer) );
+
 
     /**
      * Whether the Mesh is dirty or not
@@ -182,27 +196,27 @@ Mesh.prototype._renderWebGL = function (renderer)
     if(!glData)
     {
         glData = {
-            shader:new Shader(gl),
-            vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
-            uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
-            indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
+            shader:new Shader(gl)
+       //     vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
+         //   uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
+           // indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
             // build the vao object that will render..
-            vao:new glCore.VertexArrayObject(gl),
-            dirty:this.dirty,
-            indexDirty:this.indexDirty
+           // vao:new glCore.VertexArrayObject(gl),
+           // dirty:this.dirty,
+           // indexDirty:this.indexDirty
         };
 
-        // build the vao object that will render..
+    /*    // build the vao object that will render..
         glData.vao = new glCore.VertexArrayObject(gl)
         .addIndex(glData.indexBuffer)
         .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
         .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
         this._glDatas[renderer.CONTEXT_UID] = glData;
-
+*/
 
     }
-
+/*
     if(this.dirty !== glData.dirty)
     {
         glData.dirty = this.dirty;
@@ -215,10 +229,14 @@ Mesh.prototype._renderWebGL = function (renderer)
         glData.indexDirty = this.indexDirty;
         glData.indexBuffer.upload();
     }
+*/
+//    glData.vertexBuffer.upload();
 
-    glData.vertexBuffer.upload();
+    //always use shaders - rather than GLShadr
+    //generate geometry structure from a shader :)
 
     renderer.bindShader(glData.shader);
+    renderer.bindGeometry(this.geometry);
     renderer.bindTexture(this._texture, 0);
     renderer.state.setBlendMode(this.blendMode);
 
@@ -228,9 +246,14 @@ Mesh.prototype._renderWebGL = function (renderer)
 
     var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
-    glData.vao.bind()
-    .draw(drawMode, this.indices.length)
-    .unbind();
+    var vao = this.geometry.glVertexArrayObjects[renderer.CONTEXT_UID];
+
+    vao.draw(drawMode, this.indices.length)
+    vao.unbind();
+//    renderer.unbindGeometry(this.geometry);
+   // glData.vao.bind()
+   // .
+    //.unbind();
 };
 
 /**

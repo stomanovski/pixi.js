@@ -37,7 +37,7 @@ function MeshShader(gl)
            // '   gl_FragColor = vec4(1.0);',
             '}'
         ].join('\n')
-    );
+    , {aVertexPosition:1, aTextureCoord:0});
 }
 
 MeshShader.prototype = Object.create(Shader.prototype);
