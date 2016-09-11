@@ -9,14 +9,6 @@ class Attribute
         this.stride = stride;
         this.start = start;
         this.type = null;
-
-     /*   attributes[attribData.name] = {
-            type:type,
-            size:mapSize(type),
-            location:gl.getAttribLocation(program, attribData.name),
-            //TODO - make an attribute object
-            pointer: pointer
-        };*/
     }
 
   	destroy()

@@ -10,6 +10,9 @@
  */
 module.exports = {
     Mesh:           require('./Mesh'),
+    Geometry:           require('./geometry/Geometry'),
+    Attribute:           require('./geometry/Attribute'),
+    Buffer:           require('./geometry/Buffer'),
     Plane:           require('./Plane'),
     NineSlicePlane: require('./NineSlicePlane'),
     Rope:           require('./Rope'),

@@ -6,6 +6,9 @@ class Geometry
  	constructor()
  	{
  		this.attributes = {};
+
+ 		this.buffers = [];
+
  		this.indexBuffer = null;
 
  		this.glVertexArrayObjects = [];
@@ -17,12 +20,24 @@ class Geometry
   	{
   		this.attributes[id] = attribute;
 
+  		if(this.buffers.indexOf(attribute.buffer) === -1)
+  		{
+	  		this.buffers.push(attribute.buffer);
+  		}
+
   		return this;
   	}
 
   	addIndex(buffer)
   	{
+  		buffer.index = true;
   		this.indexBuffer = buffer;
+
+  		if(this.buffers.indexOf(buffer) === -1)
+  		{
+	  		this.buffers.push(buffer);
+  		}
+
   		return this;
   	}
 

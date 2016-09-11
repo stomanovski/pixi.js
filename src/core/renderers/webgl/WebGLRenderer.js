@@ -4,6 +4,7 @@ var SystemRenderer = require('../SystemRenderer'),
     FilterManager = require('./managers/FilterManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
+    Shader = require('../../Shader'),
     TextureManager = require('./TextureManager'),
     TextureGarbageCollector = require('./TextureGarbageCollector'),
     WebGLState = require('./WebGLState'),
@@ -475,22 +476,128 @@ WebGLRenderer.prototype.bindGeometry = function (geometry)
     const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
     vao.bind();
 
-    // upload index buffer..
-    geometry.indexBuffer.buffer._glBuffers[this.CONTEXT_UID].upload(geometry.indexBuffer.buffer.data);
-
-
-    //if(geometry.dirtyTick != vao.dirtyTick)
     //TODO - optimise later!
-    for (var i in geometry.attributes)
+    for (let i = 0; i <  geometry.buffers.length; i++)
     {
-        let buffer = geometry.attributes[i].buffer;
+        let buffer = geometry.buffers[i];
+
         let glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
-        //TODO//
-        //only upload what changed!
-        glBuffer.upload(buffer.data, 0);
+        if(buffer._updateID !== glBuffer._updateID)
+        {
+            glBuffer._updateID = buffer._updateID;
+
+            //TODO - partial upload??
+            glBuffer.upload(buffer.data, 0);
+        }
+
     }
 
+};
+
+WebGLRenderer.prototype.bindFilter = function (filter)
+{
+    var shader = filter.glShaders[this.CONTEXT_UID];
+
+    // cacheing..
+    if(!shader)
+    {
+     //   if(filter.glShaderKey)
+       // {
+           // shader = this.shaderCache[filter.glShaderKey];
+
+//            if(!shader)
+  //          {
+    //            shader = filter.glShaders[this.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+    //        }
+      //  }
+        //else
+        //{
+            shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, filter.attribMap);
+        //}
+        //
+        //
+        console.log("!!!SHADER!!!")
+    }
+
+    this.bindShader(shader);
+    this.syncUniforms(shader, filter);
+};
+
+WebGLRenderer.prototype.syncUniforms = function (shader, filter)
+{
+    var uniformData = filter.uniformData;
+    var uniforms = filter.uniforms;
+
+    // 0 is reserverd for the pixi texture so we start at 1!
+    var textureCount = 0;
+
+    var val;
+    //TODO Cacheing layer..
+    for(var i in uniformData)
+    {
+        if(uniformData[i].type === 'sampler2D')
+        {
+            shader.uniforms[i] = textureCount;
+
+            if(uniforms[i].baseTexture)
+            {
+                this.bindTexture(uniforms[i].baseTexture, textureCount);
+
+            }
+            else
+            {
+                // this is helpful as renderTargets can also be set.
+                // Although thinking about it, we could probably
+                // make the filter texture cache return a RenderTexture
+                // rather than a renderTarget
+                var gl = this.gl;
+          //      this._activeTextureLocation = gl.TEXTURE0 + textureCount;
+            //    gl.activeTexture(gl.TEXTURE0 + textureCount );
+              //  uniforms[i].texture.bind();
+            }
+
+            textureCount++;
+        }
+        else if(uniformData[i].type === 'mat3')
+        {
+            // check if its pixi matrix..
+            if(uniforms[i].a !== undefined)
+            {
+                shader.uniforms[i] = uniforms[i].toArray(true);
+            }
+            else
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
+        else if(uniformData[i].type === 'vec2')
+        {
+            //check if its a point..
+           if(uniforms[i].x !== undefined)
+           {
+                val = shader.uniforms[i] || new Float32Array(2);
+                val[0] = uniforms[i].x;
+                val[1] = uniforms[i].y;
+                shader.uniforms[i] = val;
+           }
+           else
+           {
+                shader.uniforms[i] = uniforms[i];
+           }
+        }
+        else if(uniformData[i].type === 'float')
+        {
+            if(shader.uniforms.data[i].value !== uniformData[i])
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
+        else
+        {
+            shader.uniforms[i] = uniforms[i];
+        }
+    }
 };
 
 WebGLRenderer.prototype.unbindGeometry = function (geometry)
@@ -498,7 +605,7 @@ WebGLRenderer.prototype.unbindGeometry = function (geometry)
     const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
     vao.unbind();
 
-}
+};
 
 WebGLRenderer.prototype.initGeometryVAO = function (geometry)
 {
@@ -506,35 +613,40 @@ WebGLRenderer.prototype.initGeometryVAO = function (geometry)
 
     let vao = this.createVao();
 
-    //first update the index buffer..
-    let indexBuffer = geometry.indexBuffer;
-    let glIndexbuffer = indexBuffer.buffer._glBuffers[this.CONTEXT_UID];
-
-    if(!glIndexbuffer)
+    // first update - and creat the buffers!
+    for (var i = 0; i < geometry.buffers.length; i++)
     {
-        glIndexbuffer = indexBuffer.buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, indexBuffer.buffer.data);
-        vao.addIndex(glIndexbuffer);
+        let buffer = geometry.buffers[i];
+
+        if(!buffer._glBuffers[this.CONTEXT_UID])
+        {
+            if(buffer.index)
+            {
+                buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, buffer.data);
+            }
+            else
+            {
+                buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
+            }
+        }
     }
+
+    //first update the index buffer..
+    vao.addIndex(geometry.indexBuffer._glBuffers[this.CONTEXT_UID]);
 
     var map = geometry.generateAttributeLocations();
 
     //next update the attributes buffer..
     for (var i in geometry.attributes)
     {
+
         let attribute = geometry.attributes[i];
         let buffer = attribute.buffer;
 
-        if(!buffer._glBuffers[this.CONTEXT_UID])
-        {
-            buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
-        }
-
         // need to know the shader..
         // or DO we... NOPE!
-        // console.log(buffer._glBuffers[this.CONTEXT_UID], map[i])
-        //  console.log(map)
         var glBuffer = buffer._glBuffers[this.CONTEXT_UID];
-        //console.log(glBuffer)
+
         vao.addAttribute(glBuffer, {
             size:attribute.size,
             location:map[i]

@@ -43,8 +43,6 @@ StencilManager.prototype.setMaskStack = function ( stencilMaskStack )
  */
 StencilManager.prototype.pushStencil = function (graphics)
 {
-    this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
-
     this.renderer._activeRenderTarget.attachStencilBuffer();
 
     var gl = this.renderer.gl,
@@ -62,7 +60,7 @@ StencilManager.prototype.pushStencil = function (graphics)
     gl.colorMask(false, false, false, false);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
-    this.renderer.plugins.graphics.render(graphics);
+    graphics._renderWebGL(this.renderer);
 
     gl.colorMask(true, true, true, true);
     gl.stencilFunc(gl.NOTEQUAL,0, sms.length);
@@ -74,8 +72,6 @@ StencilManager.prototype.pushStencil = function (graphics)
  */
 StencilManager.prototype.popStencil = function ()
 {
-    this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
-
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
 
@@ -91,7 +87,7 @@ StencilManager.prototype.popStencil = function ()
         gl.colorMask(false, false, false, false);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
-        this.renderer.plugins.graphics.render(graphics);
+        graphics._renderWebGL(this.renderer);
 
         gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);

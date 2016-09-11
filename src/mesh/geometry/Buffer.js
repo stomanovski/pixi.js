@@ -34,6 +34,8 @@ class BufferX
 		this.data = data;
 
 		this._glBuffers = [];
+
+		this._updateID = 0;
 	}
 
 	/**
@@ -43,7 +45,7 @@ class BufferX
 	 */
 	update()
 	{
-		this.needsUpdate = true;
+		this._updateID++;
 	}
 
 	/**
