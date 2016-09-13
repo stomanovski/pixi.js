@@ -1,4 +1,5 @@
 var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
+    extractAttributesFromSrc = require('./extractAttributesFromSrc'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
     SOURCE_KEY_MAP = {};
@@ -12,7 +13,7 @@ var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-function Filter(vertexSrc, fragmentSrc, uniforms)
+function Filter(vertexSrc, fragmentSrc, uniforms, attributes)
 {
 
     /**
@@ -34,6 +35,7 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
     this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+    this.attributeData = extractAttributesFromSrc( this.vertexSrc );
 
     this.uniforms = {};
 

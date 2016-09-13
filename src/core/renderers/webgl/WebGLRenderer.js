@@ -513,7 +513,14 @@ WebGLRenderer.prototype.bindFilter = function (filter)
       //  }
         //else
         //{
-            shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, filter.attribMap);
+
+        var attribMap = {};
+        for (var i in filter.attributeData)
+        {
+            attribMap[i] = filter.attributeData[i].location;
+        };
+
+        shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, attribMap);
         //}
         //
         //

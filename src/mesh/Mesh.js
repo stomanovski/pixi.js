@@ -15,53 +15,9 @@ function Mesh(geometry, shader, drawMode)
 {
     core.Container.call(this);
 
-    /**
-     * The texture of the Mesh
-     *
-     * @member {PIXI.Texture}
-     * @private
-     */
-//    this._texture = null;
-
-    /**
-     * The Uvs of the Mesh
-     *
-     * @member {Float32Array}
-     */
-    //this.uvs = uvs || new Float32Array([0, 0,
-       /// 1, 0,
-        //1, 1,
-        //0, 1]);
-
-    /**
-     * An array of vertices
-     *
-     * @member {Float32Array}
-     */
-  //  this.vertices = vertices || new Float32Array([0, 0,
-    //    100, 0,
-      //  100, 100,
-        //0, 100]);
-
-    /*
-     * @member {Uint16Array} An array containing the indices of the vertices
-     */
-    //  TODO auto generate this based on draw mode!
-   // this.indices = indices || new Uint16Array([0, 1, 3, 2]);
-
-//    this.positionBuffer = Buffer.from(this.vertices);
-  //  this.uvBuffer = Buffer.from(this.uvs);
-    //this.indexBuffer = Buffer.from(this.indices);
-
-
     this.geometry = geometry;
     this.shader = shader;
 
-    /*new Geometry();
-    this.geometry.addAttribute('aVertexPosition', Attribute.from(this.positionBuffer) );
-    this.geometry.addAttribute('aTextureCoord', Attribute.from(this.uvBuffer) );
-    this.geometry.addIndex( this.indexBuffer );
-    */
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
      *
@@ -85,14 +41,12 @@ function Mesh(geometry, shader, drawMode)
      */
     this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
 
-     this.tintRgb = new Float32Array([1, 1, 1]);
-
-     /**
+    /**
      * The default shader that is used if a mesh doesn't have a more specific one.
      *
      * @member {PIXI.Shader}
      */
-     this._glDatas = [];
+    this._glDatas = [];
 }
 
 // constructor
@@ -126,11 +80,6 @@ Mesh.prototype._renderWebGL = function (renderer)
     renderer.bindFilter(this.shader);
 
     renderer.state.setBlendMode(this.blendMode);
-
-    //renderer.bindShader(glData.shader);
-    //glData.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
-    //glData.shader.uniforms.alpha = this.worldAlpha;
-    //glData.shader.uniforms.tint = this.tintRgb;
 
     var drawMode = this.drawMode;
 
