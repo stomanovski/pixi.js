@@ -502,6 +502,7 @@ WebGLRenderer.prototype.bindFilter = function (filter)
     // cacheing..
     if(!shader)
     {
+        //TODO - fix and rename..
      //   if(filter.glShaderKey)
        // {
            // shader = this.shaderCache[filter.glShaderKey];
@@ -518,13 +519,9 @@ WebGLRenderer.prototype.bindFilter = function (filter)
         for (var i in filter.attributeData)
         {
             attribMap[i] = filter.attributeData[i].location;
-        };
+        }
 
         shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, attribMap);
-        //}
-        //
-        //
-        console.log("!!!SHADER!!!")
     }
 
     this.bindShader(shader);
@@ -552,17 +549,17 @@ WebGLRenderer.prototype.syncUniforms = function (shader, filter)
                 this.bindTexture(uniforms[i].baseTexture, textureCount);
 
             }
-            else
-            {
+          //  else
+           // {
                 // this is helpful as renderTargets can also be set.
                 // Although thinking about it, we could probably
                 // make the filter texture cache return a RenderTexture
                 // rather than a renderTarget
-                var gl = this.gl;
+               // var gl = this.gl;
           //      this._activeTextureLocation = gl.TEXTURE0 + textureCount;
             //    gl.activeTexture(gl.TEXTURE0 + textureCount );
               //  uniforms[i].texture.bind();
-            }
+          //  }
 
             textureCount++;
         }
@@ -621,7 +618,7 @@ WebGLRenderer.prototype.initGeometryVAO = function (geometry)
     let vao = this.createVao();
 
     // first update - and creat the buffers!
-    for (var i = 0; i < geometry.buffers.length; i++)
+    for (let i = 0; i < geometry.buffers.length; i++)
     {
         let buffer = geometry.buffers[i];
 
@@ -644,10 +641,10 @@ WebGLRenderer.prototype.initGeometryVAO = function (geometry)
     var map = geometry.generateAttributeLocations();
 
     //next update the attributes buffer..
-    for (var i in geometry.attributes)
+    for (let j in geometry.attributes)
     {
 
-        let attribute = geometry.attributes[i];
+        let attribute = geometry.attributes[j];
         let buffer = attribute.buffer;
 
         // need to know the shader..
@@ -656,7 +653,7 @@ WebGLRenderer.prototype.initGeometryVAO = function (geometry)
 
         vao.addAttribute(glBuffer, {
             size:attribute.size,
-            location:map[i]
+            location:map[j]
         },  gl.FLOAT, false, attribute.stride, attribute.start);
     }
 

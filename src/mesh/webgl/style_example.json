@@ -1,0 +1,23 @@
+style:{
+
+	colors:
+	{
+		feudBg:0xFF0000,
+		feudRope:0xFF0000,
+		feudHandle:0xFF0000,
+
+		gamesListBg:0xFF0000,
+		sideMenuBg:0xFF0000,
+
+
+		//optional?
+		cogsBg:0xFF0000,
+		cogs:0xFF0000,
+
+		//optional?
+		fishBg:0xFF00FF,
+		fish:0xFF00FF
+	},
+
+	theme:'halloween'
+}

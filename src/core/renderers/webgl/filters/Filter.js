@@ -13,7 +13,7 @@ var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-function Filter(vertexSrc, fragmentSrc, uniforms, attributes)
+function Filter(vertexSrc, fragmentSrc, uniforms)
 {
 
     /**

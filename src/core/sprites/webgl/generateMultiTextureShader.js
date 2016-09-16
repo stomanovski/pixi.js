@@ -11,7 +11,7 @@ var fragTemplate = [
     'vec4 color;',
     'float textureId = floor(vTextureId+0.5);',
     '%forloop%',
-    'gl_FragColor = color * vColor;',
+    'gl_FragColor = color * vec4(vColor.rgb * vColor.a, vColor.a);',
     '}'
 ].join('\n');
 

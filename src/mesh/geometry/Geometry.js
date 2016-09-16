@@ -71,9 +71,5 @@ class Geometry
   	}
 }
 
-Geometry.fromShader = function(shader, size)
-{
-
-}
 
 module.exports = Geometry;

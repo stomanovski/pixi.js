@@ -1,5 +1,5 @@
-var core = require('../core'),
-    Shader = require('./webgl/MeshShader');
+var core = require('../core');
+
 /**
  * Base mesh class
  * @class

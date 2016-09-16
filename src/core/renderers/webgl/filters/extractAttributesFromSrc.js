@@ -3,7 +3,6 @@ var defaultValue = require('pixi-gl-core').shader.defaultValue;
 function extractAttributesFromSrc(vertexSrc, mask)
 {
     var vertAttributes = extractAttributesFromString(vertexSrc, mask);
-    console.log(vertAttributes)
     return vertAttributes;
 }
 
@@ -55,18 +54,18 @@ function extractAttributesFromString(string)
     }
 
     attributesArray.sort(function(a, b){
-        return (a.name > b.name)
+        return (a.name > b.name) ? 1:-1;
     });
 
     var attributes = {};
 
     // now lets sort them alphabetically..
-    for (var i = 0; i < attributesArray.length; i++)
+    for (i = 0; i < attributesArray.length; i++)
     {
         var attrib = attributesArray[i];
         attrib.location = i;
         attributes[attrib.name] = attrib;
-    };
+    }
 
     return attributes;
 }
