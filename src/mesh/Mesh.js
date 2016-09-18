@@ -16,6 +16,7 @@ function Mesh(geometry, shader, drawMode)
     core.Container.call(this);
 
     this.geometry = geometry;
+
     this.shader = shader;
 
     /**
@@ -40,13 +41,6 @@ function Mesh(geometry, shader, drawMode)
      * @see PIXI.mesh.Mesh.DRAW_MODES
      */
     this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
-
-    /**
-     * The default shader that is used if a mesh doesn't have a more specific one.
-     *
-     * @member {PIXI.Shader}
-     */
-    this._glDatas = [];
 }
 
 // constructor
@@ -65,44 +59,35 @@ Mesh.prototype._renderWebGL = function (renderer)
     // get rid of any thing that may be batching.
     renderer.flush();
 
-    //  renderer.plugins.mesh.render(this);
-    var gl = renderer.gl;
-
     //always use shaders - rather than GLShadr
     //generate geometry structure from a shader :)
-    renderer.bindGeometry(this.geometry);
 
+    // set the shader props..
     if(this.shader.uniforms.translationMatrix)
     {
+        // the transform!
         this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
     }
 
-    renderer.bindFilter(this.shader);
-
+      // set the correct blend mode
     renderer.state.setBlendMode(this.blendMode);
 
-    var drawMode = this.drawMode;
+    // bind the shader..
+    // TODO rename filter to shader
+    renderer.bindFilter(this.shader);
 
-    if(drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
-    {
-         drawMode = gl.TRIANGLE_STRIP;
-    }
-    else if(drawMode === Mesh.DRAW_MODES.POINTS)
-    {
+    // now time for geometry..
 
-        drawMode = gl.POINTS;
-    }
-    else
-    {
-        drawMode = gl.TRIANGLES;
-    }
+    // bind the geometry...
+    renderer.bindGeometry(this.geometry);
 
+    // then render it..
+    renderer.renderGeometry(this.geometry, this.drawMode);
 
-    var vao = this.geometry.glVertexArrayObjects[renderer.CONTEXT_UID];
-
-    vao.draw(drawMode);
-
-    vao.unbind();
+    // then unbind it..
+    // TODO - maybe create a state in renderer for geometry?
+    // maybe renderer should be a renderer?
+    // although pretty much ALL items will simply be geometry + shader
     renderer.unbindGeometry(this.geometry);
 
 };

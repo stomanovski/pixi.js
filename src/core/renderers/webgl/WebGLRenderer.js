@@ -606,9 +606,33 @@ WebGLRenderer.prototype.syncUniforms = function (shader, filter)
 
 WebGLRenderer.prototype.unbindGeometry = function (geometry)
 {
-    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
+    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
     vao.unbind();
+};
 
+WebGLRenderer.prototype.renderGeometry = function (geometry, drawMode)
+{
+    const gl = this.gl;
+
+    const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+
+    //TODO - build a map
+    if(drawMode === CONST.DRAW_MODES.TRIANGLE_MESH)
+    {
+     //    drawMode = gl.TRIANGLE_STRIP;
+    }
+    else if(drawMode === CONST.DRAW_MODES.POINTS)
+    {
+
+    }
+    else
+    {
+    //    drawMode = gl.TRIANGLES;
+    }
+
+    drawMode = gl.POINTS;
+
+    vao.draw(drawMode);
 };
 
 WebGLRenderer.prototype.initGeometryVAO = function (geometry)
