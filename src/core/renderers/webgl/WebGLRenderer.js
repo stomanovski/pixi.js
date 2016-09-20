@@ -476,23 +476,25 @@ WebGLRenderer.prototype.bindGeometry = function (geometry)
     const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
     vao.bind();
 
-    //TODO - optimise later!
-    for (let i = 0; i <  geometry.buffers.length; i++)
+    if(geometry.autoUpdate)
     {
-        let buffer = geometry.buffers[i];
-
-        let glBuffer = buffer._glBuffers[this.CONTEXT_UID];
-
-        if(buffer._updateID !== glBuffer._updateID)
+        //TODO - optimise later!
+        for (let i = 0; i <  geometry.buffers.length; i++)
         {
-            glBuffer._updateID = buffer._updateID;
+            let buffer = geometry.buffers[i];
 
-            //TODO - partial upload??
-            glBuffer.upload(buffer.data, 0);
+            let glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+            if(buffer._updateID !== glBuffer._updateID)
+            {
+                glBuffer._updateID = buffer._updateID;
+
+                //TODO - partial upload??
+                glBuffer.upload(buffer.data, 0);
+            }
+
         }
-
     }
-
 };
 
 WebGLRenderer.prototype.bindFilter = function (filter)

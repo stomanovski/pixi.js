@@ -45,7 +45,7 @@ class Geometry
 
   	generateAttributeLocations()
   	{
-		let array = [];
+		  let array = [];
 
   		for (var i in this.attributes)
   		{
