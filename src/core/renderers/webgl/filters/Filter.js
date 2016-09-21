@@ -1,4 +1,5 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
+import extractAttributesFromSrc from './extractAttributesFromSrc';
 import utils from '../../../utils';
 import CONST from '../../../const';
 
@@ -37,6 +38,7 @@ class Filter
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types
         this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+        this.attributeData = extractAttributesFromSrc( this.vertexSrc );
 
         this.uniforms = {};
 
@@ -95,7 +97,7 @@ class Filter
      * @static
      * @constant
      */
-    static get defaultVertexSrc() { 
+    static get defaultVertexSrc() {
         return [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
@@ -146,7 +148,7 @@ class Filter
             '}'
         ].join('\n');
     }
-    
+
 }
 
 export default Filter;

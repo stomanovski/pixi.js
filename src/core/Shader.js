@@ -31,12 +31,13 @@ function checkPrecision(src)
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ * @param attributeLocations {object} a map that contains the attribute locations
  */
 class Shader extends GLShader
 {
-    constructor(gl, vertexSrc, fragmentSrc)
+    constructor(gl, vertexSrc, fragmentSrc, attributeLocations)
     {
-        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc), attributeLocations);
     }
 }
 

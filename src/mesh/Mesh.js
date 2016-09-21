@@ -1,4 +1,4 @@
-var core = require('../core');
+import core from '../core';
 
 /**
  * Base mesh class
