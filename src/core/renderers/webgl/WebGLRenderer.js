@@ -12,6 +12,7 @@ import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
 import validateContext from './utils/validateContext';
 import utils from '../../utils';
 import glCore from 'pixi-gl-core';
+import Shader from '../../Shader';
 import CONST from '../../const';
 
 let CONTEXT_UID = 0;
@@ -461,6 +462,227 @@ class WebGLRenderer extends SystemRenderer
 
         return this;
     }
+
+
+
+    bindGeometry(geometry)
+    {
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVAO(geometry);
+        vao.bind();
+
+        if(geometry.autoUpdate)
+        {
+            //TODO - optimise later!
+            for (let i = 0; i <  geometry.buffers.length; i++)
+            {
+                let buffer = geometry.buffers[i];
+
+                let glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+                if(buffer._updateID !== glBuffer._updateID)
+                {
+                    glBuffer._updateID = buffer._updateID;
+
+                    //TODO - partial upload??
+                    glBuffer.upload(buffer.data, 0);
+                }
+
+            }
+        }
+    }
+
+    bindFilter(filter)
+    {
+        var shader = filter.glShaders[this.CONTEXT_UID];
+
+        // cacheing..
+        if(!shader)
+        {
+            //TODO - fix and rename..
+         //   if(filter.glShaderKey)
+           // {
+               // shader = this.shaderCache[filter.glShaderKey];
+
+    //            if(!shader)
+      //          {
+        //            shader = filter.glShaders[this.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+        //        }
+          //  }
+            //else
+            //{
+
+            var attribMap = {};
+            for (var i in filter.attributeData)
+            {
+                attribMap[i] = filter.attributeData[i].location;
+            }
+
+            shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, attribMap);
+        }
+
+        this.bindShader(shader);
+        this.syncUniforms(shader, filter);
+    }
+
+    syncUniforms(shader, filter)
+    {
+        var uniformData = filter.uniformData;
+        var uniforms = filter.uniforms;
+
+        // 0 is reserverd for the pixi texture so we start at 1!
+        var textureCount = 0;
+
+        var val;
+        //TODO Cacheing layer..
+        for(var i in uniformData)
+        {
+            if(uniformData[i].type === 'sampler2D')
+            {
+                shader.uniforms[i] = textureCount;
+
+                if(uniforms[i].baseTexture)
+                {
+                    this.bindTexture(uniforms[i].baseTexture, textureCount);
+
+                }
+              //  else
+               // {
+                    // this is helpful as renderTargets can also be set.
+                    // Although thinking about it, we could probably
+                    // make the filter texture cache return a RenderTexture
+                    // rather than a renderTarget
+                   // var gl = this.gl;
+              //      this._activeTextureLocation = gl.TEXTURE0 + textureCount;
+                //    gl.activeTexture(gl.TEXTURE0 + textureCount );
+                  //  uniforms[i].texture.bind();
+              //  }
+
+                textureCount++;
+            }
+            else if(uniformData[i].type === 'mat3')
+            {
+                // check if its pixi matrix..
+                if(uniforms[i].a !== undefined)
+                {
+                    shader.uniforms[i] = uniforms[i].toArray(true);
+                }
+                else
+                {
+                    shader.uniforms[i] = uniforms[i];
+                }
+            }
+            else if(uniformData[i].type === 'vec2')
+            {
+                //check if its a point..
+               if(uniforms[i].x !== undefined)
+               {
+                    val = shader.uniforms[i] || new Float32Array(2);
+                    val[0] = uniforms[i].x;
+                    val[1] = uniforms[i].y;
+                    shader.uniforms[i] = val;
+               }
+               else
+               {
+                    shader.uniforms[i] = uniforms[i];
+               }
+            }
+            else if(uniformData[i].type === 'float')
+            {
+                if(shader.uniforms.data[i].value !== uniformData[i])
+                {
+                    shader.uniforms[i] = uniforms[i];
+                }
+            }
+            else
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
+    }
+
+    unbindGeometry(geometry)
+    {
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+        vao.unbind();
+    }
+
+    renderGeometry(geometry, drawMode)
+    {
+        const gl = this.gl;
+
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+
+        //TODO - build a map
+        if(drawMode === CONST.DRAW_MODES.TRIANGLE_MESH)
+        {
+             drawMode = gl.POINTS;
+        }
+        else if(drawMode === CONST.DRAW_MODES.POINTS)
+        {
+
+            drawMode = gl.POINTS;
+        }
+        else
+        {
+            drawMode = gl.POINTS;
+        }
+
+        drawMode = gl.POINTS;
+
+        vao.draw(drawMode);
+    }
+
+    initGeometryVAO(geometry)
+    {
+        const gl = this.gl;
+
+        let vao = this.createVao();
+
+        // first update - and creat the buffers!
+        for (let i = 0; i < geometry.buffers.length; i++)
+        {
+            let buffer = geometry.buffers[i];
+
+            if(!buffer._glBuffers[this.CONTEXT_UID])
+            {
+                if(buffer.index)
+                {
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, buffer.data);
+                }
+                else
+                {
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
+                }
+            }
+        }
+
+        //first update the index buffer..
+        vao.addIndex(geometry.indexBuffer._glBuffers[this.CONTEXT_UID]);
+
+        var map = geometry.generateAttributeLocations();
+
+        //next update the attributes buffer..
+        for (let j in geometry.attributes)
+        {
+
+            let attribute = geometry.attributes[j];
+            let buffer = attribute.buffer;
+
+            // need to know the shader..
+            // or DO we... NOPE!
+            var glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+            vao.addAttribute(glBuffer, {
+                size:attribute.size,
+                location:map[j]
+            },  gl.FLOAT, false, attribute.stride, attribute.start);
+        }
+
+        geometry.glVertexArrayObjects[this.CONTEXT_UID ] = vao;
+
+        return vao;
+    }
+
 
     createVao()
     {
