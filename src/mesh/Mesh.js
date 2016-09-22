@@ -86,7 +86,7 @@ Mesh.prototype._renderWebGL = function (renderer)
 
     // then unbind it..
     // TODO - maybe create a state in renderer for geometry?
-    // maybe renderer should be a renderer?
+    // maybe renderer shouldxwww be a renderer?
     // although pretty much ALL items will simply be geometry + shader
     renderer.unbindGeometry(this.geometry);
 
@@ -101,8 +101,15 @@ Mesh.prototype._renderWebGL = function (renderer)
  */
 Mesh.prototype._calculateBounds = function ()
 {
-    //TODO - we can cache local bounds and use them if they are dirty (like graphics)
-    //this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
+    // The position property could be set manually?
+    if(this.geometry.attributes.aVertexPosition)
+    {
+        var vertices = this.geometry.attributes.aVertexPosition.buffer.data;
+
+        //TODO - we can cache local bounds and use them if they are dirty (like graphics)
+        this._bounds.addVertices(this.transform, vertices. 0, vertices.length);
+    }
+
 };
 
 /**

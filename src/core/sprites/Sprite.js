@@ -3,8 +3,18 @@ import Texture from '../textures/Texture';
 import Container from '../display/Container';
 import utils from '../utils';
 import CONST from '../const';
+import Attribute from '../../mesh/geometry/Attribute';
+import Buffer from '../../mesh/geometry/Buffer';
+import Geometry from '../../mesh/geometry/Geometry';
 
 const tempPoint = new math.Point();
+
+var geometry = new Geometry()
+        .addAttribute('aVertexPosition', Attribute.from( null, 2 ))
+        .addAttribute('aTextureCoord', Attribute.from( null, 3 ))
+        .addAttribute('aColor', Attribute.from( null, 1 ))
+        .addAttribute('aTextureId', Attribute.from( null, 1 ))
+//        .addIndex(Buffer.from(indices));
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -27,7 +37,7 @@ class Sprite extends Container
         super();
 
         /**
-         * The anchor sets the origin point of the texture.
+         * /ssThe anchor sets the origin point of the texture.
          * The default is 0,0 this means the texture's origin is the top left
          * Setting the anchor to 0.5,0.5 means the texture's origin is centered
          * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
@@ -112,6 +122,24 @@ class Sprite extends Container
 
         this._transformID = -1;
         this._textureID = -1;
+
+        this.geomTemplate = geometry;
+
+        //this.realData = new ArrayBuffer(8*4);
+      //  this.floatView = new Float32Array(this.realData);
+    //    this.uintView = new Uint32Array(this.realData);
+     //  this.buffer = Buffer.from(this.vertexData);
+/*
+
+        //
+        //this can be batched!
+        this.geometry = new Geometry()
+        .addAttribute('aVertexPosition', Attribute.from( this.buffer, 2 ))
+        .addAttribute('aTextureCoord', Attribute.from( this.buffer, 3 ))
+        .addAttribute('aColor', Attribute.from( this.buffer, 1 ))
+        .addAttribute('aTextureId', Attribute.from( this.buffer, 1 ))
+//        .addIndex(Buffer.from(indices));
+*/
     }
 
     /**

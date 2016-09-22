@@ -8,7 +8,7 @@
  * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
  * @param drawType {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
  */
-class BufferX
+class Buffer
 {
 	constructor(data)
 	{
@@ -54,13 +54,18 @@ class BufferX
 	 */
 	destroy()
 	{
+		for (var i = 0; i < this._glBuffers.length; i++)
+		{
+			this._glBuffers[i].destroy();
+		};
 
+		this.data = null;
 	}
 }
 
-BufferX.from = function(data)
+Buffer.from = function(data)
 {
-	return new BufferX(data);
+	return new Buffer(data);
 };
 
-module.exports = BufferX;
+module.exports = Buffer;

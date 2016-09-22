@@ -13,9 +13,7 @@ class Attribute
 
 	destroy()
 	{
-		/*
-			fill in
-		*/
+		this.buffer = null;
 	}
 
 }

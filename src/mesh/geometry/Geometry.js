@@ -1,5 +1,3 @@
-
-
 class Geometry
 {
 
@@ -12,8 +10,6 @@ class Geometry
 		this.indexBuffer = null;
 
 		this.glVertexArrayObjects = [];
-
-
 	}
 
 	addAttribute(id, attribute)
@@ -41,19 +37,16 @@ class Geometry
 		return this;
 	}
 
-
-
 	generateAttributeLocations()
 	{
 		let array = [];
 
 		for (var i in this.attributes)
 		{
-		array.push(i);
+			array.push(i);
 		}
 
 		array.sort();
-		//array.reverse();
 
 		let map = {};
 
@@ -67,7 +60,23 @@ class Geometry
 
 	destroy()
 	{
+		for (let i = 0; i < this.buffers.length; i++)
+		{
+			this.buffers[i].destroy();
+		};
 
+		this.buffers = null;
+		this.attributes = null;
+
+		for (let i = 0; i < this.glVertexArrayObjects.length; i++)
+		{
+			this.glVertexArrayObjects[i].destroy();
+		};
+
+		this.glVertexArrayObjects = null;
+
+		this.indexBuffer.destroy();
+		this.indexBuffer = null;
 	}
 }
 
