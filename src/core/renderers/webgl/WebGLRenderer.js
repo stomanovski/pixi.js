@@ -409,7 +409,7 @@ class WebGLRenderer extends SystemRenderer
      *
      * @param shader {PIXI.Shader} the new shader
      */
-    bindShader(shader)
+    bindGLShader(shader)
     {
         //TODO cache
         if(this._activeShader !== shader)
@@ -491,7 +491,7 @@ class WebGLRenderer extends SystemRenderer
         }
     }
 
-    bindFilter(filter)
+    bindShader(filter)
     {
         var shader = filter.glShaders[this.CONTEXT_UID];
 
@@ -520,7 +520,7 @@ class WebGLRenderer extends SystemRenderer
             shader = filter.glShaders[this.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc, attribMap);
         }
 
-        this.bindShader(shader);
+        this.bindGLShader(shader);
         this.syncUniforms(shader, filter);
     }
 

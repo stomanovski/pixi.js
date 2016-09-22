@@ -108,7 +108,7 @@ class ParticleRenderer extends core.ObjectRenderer
      */
     start()
     {
-        this.renderer.bindShader(this.shader);
+        this.renderer.bindGLShader(this.shader);
     }
 
 

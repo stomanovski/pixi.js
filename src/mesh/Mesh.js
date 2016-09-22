@@ -74,7 +74,7 @@ Mesh.prototype._renderWebGL = function (renderer)
 
     // bind the shader..
     // TODO rename filter to shader
-    renderer.bindFilter(this.shader);
+    renderer.bindShader(this.shader);
 
     // now time for geometry..
 

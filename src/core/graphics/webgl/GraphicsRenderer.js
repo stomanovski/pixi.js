@@ -88,7 +88,7 @@ class GraphicsRenderer extends ObjectRenderer
 
         // This  could be speeded up for sure!
         const shader = this.primitiveShader;
-        renderer.bindShader(shader);
+        renderer.bindGLShader(shader);
         renderer.state.setBlendMode( graphics.blendMode );
 
         for (let i = 0, n = webGL.data.length; i < n; i++)

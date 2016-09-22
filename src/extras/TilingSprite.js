@@ -119,7 +119,7 @@ class TilingSprite extends core.Sprite
 
         glData.quad.upload();
 
-        renderer.bindShader(glData.shader);
+        renderer.bindGLShader(glData.shader);
 
         const textureUvs = texture._uvs,
             textureWidth = texture._frame.width,

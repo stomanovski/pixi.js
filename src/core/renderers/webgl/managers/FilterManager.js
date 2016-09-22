@@ -214,7 +214,7 @@ class FilterManager extends WebGLManager
             renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
         }
 
-        renderer.bindShader(shader);
+        renderer.bindGLShader(shader);
 
         // this syncs the pixi filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);

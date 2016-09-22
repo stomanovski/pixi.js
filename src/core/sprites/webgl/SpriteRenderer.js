@@ -349,7 +349,7 @@ class SpriteRenderer extends ObjectRenderer
                 //console.log("SHADER generated for " + textureCount + " textures")
             }
 
-            this.renderer.bindShader(shader);
+            this.renderer.bindGLShader(shader);
 
             for (let j = 0; j < groupTextureCount; j++)
             {

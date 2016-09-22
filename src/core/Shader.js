@@ -19,6 +19,7 @@ function checkPrecision(src)
             return `precision ${Const.PRECISION.DEFAULT} float;\n${src}`;
         }
     }
+
     return src;
 }
 
