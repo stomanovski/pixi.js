@@ -206,6 +206,14 @@ $> npm run docs
 
 The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
 
+### Custom ###
+
+Good way to build more compact version of pixi.js:
+
+```
+$> npm run build -- -e interaction -e accessibility -e mesh -e particles
+```
+
 ### License ###
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
