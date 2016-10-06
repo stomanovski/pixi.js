@@ -441,7 +441,10 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     if (!baseTexture)
     {
         baseTexture = new BaseTexture(canvas, scaleMode);
-        utils.BaseTextureCache[canvas._pixiId] = baseTexture;
+// *** SPARK
+// textures created from canvas shouldn't be cached, because these canvases
+// are usually temporary in nature and the cached texture can not be reused later
+//        utils.BaseTextureCache[canvas._pixiId] = baseTexture;
     }
 
     return baseTexture;
