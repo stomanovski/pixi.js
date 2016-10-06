@@ -4,8 +4,8 @@ var WebGLManager = require('./WebGLManager'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math'),
     Shader = require('../../../Shader'),
-    filterTransforms = require('../filters/filterTransforms'),
-    bitTwiddle = require('bit-twiddle');
+    filterTransforms = require('../filters/filterTransforms');
+//    bitTwiddle = require('bit-twiddle');
 
 var FilterState = function()
 {
@@ -392,8 +392,12 @@ FilterManager.prototype.destroy = function()
 FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
-    minWidth = bitTwiddle.nextPow2(minWidth * resolution);
-    minHeight = bitTwiddle.nextPow2(minHeight * resolution);
+
+// *** SPARK
+// Disabled rounding up of dimensions to power of two, because
+// this breaks texture uv calculations for some shaders
+//    minWidth = bitTwiddle.nextPow2(minWidth * resolution);
+//    minHeight = bitTwiddle.nextPow2(minHeight * resolution);
 
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
