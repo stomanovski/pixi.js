@@ -147,6 +147,23 @@ WebGLState.prototype.setBlendMode = function(value)
         return;
     }
 
+    // *** SPARK
+    // extra blending mode unsupported currently by PIXI
+    if(value === 'SDF') {
+        var ext = this.gl.getExtension('EXT_blend_minmax'); // GL_MAX is achieved through an extension in WebGL: https://developer.mozilla.org/en-US/docs/Web/API/EXT_blend_minmax
+        
+        if(ext) {
+            value = 1; // BLEND_MODES.ADD
+            this.gl.blendEquation(ext.MAX_EXT);        
+        }
+        else {
+            value = 0; // BLEND_MODES.NORMAL
+        }
+    }
+    else {
+        this.gl.blendEquation(this.gl.FUNC_ADD); // the default blend equation
+    }
+    
     this.activeState[BLEND_FUNC] = value;
 
     this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
