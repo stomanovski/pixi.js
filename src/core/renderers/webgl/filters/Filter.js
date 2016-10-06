@@ -57,7 +57,11 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     /**
      * The padding of the filter. Some filters require extra space to breath such as a blur. Increasing this will add extra width and height to the bounds of the object that the filter is applied to.
      */
-    this.padding = 4;
+    
+// *** SPARK
+// this.padding = 4;
+// Padding causes ugly extra lines on right and bottom sides
+    this.padding = 0; 
 
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but increase the performance of the filter.
