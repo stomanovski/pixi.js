@@ -28,7 +28,7 @@
     "lint": "jshint --reporter=scripts/reporter.js scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
-    "postbuild": "npm test",
+    "postbuild": "",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
   },
   "files": [
@@ -48,6 +48,7 @@
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.2",
     "resource-loader": "^1.6.4",
+    "gl-matrix": "^2.1.0",            
     "browserify-versionify": "^1.0.6"
   },
   "devDependencies": {

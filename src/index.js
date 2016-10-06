@@ -13,6 +13,7 @@ core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
 core.extract        = require('./extract');
 core.prepare        = require('./prepare');
+core.flip           = require('./flip');
 
 // export a premade loader instance
 /**
