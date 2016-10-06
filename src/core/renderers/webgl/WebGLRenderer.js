@@ -551,10 +551,13 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this._contextOptions = null;
     this.gl.useProgram(null);
 
-    if(this.gl.getExtension('WEBGL_lose_context'))
-    {
-        this.gl.getExtension('WEBGL_lose_context').loseContext();
-    }
+// *** SPARK
+// calling WEBGL_lose_context can hang the browser and generally is not required
+// to be called from the client code. The main pupose of this extension is for debugging
+//    if(this.gl.getExtension('WEBGL_lose_context'))
+//    {
+//        this.gl.getExtension('WEBGL_lose_context').loseContext();
+//    }
 
     this.gl = null;
 
