@@ -135,7 +135,11 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
 
-        this.source.play();
+        // *** SPARK
+        // video should be played only if the autoplay flag is set
+        if(this.source.autoplay) {
+            this.source.play();             
+        }
 
         // prevent multiple loaded dispatches..
         if (!this.__loaded)
