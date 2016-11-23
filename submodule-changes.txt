@@ -1,0 +1,23 @@
+In module 'pixi-gl-core':
+
+1. Add this in Texture.prototype.upload@GLTexture.js (before the call to gl.texImage2D):
+
+
+    // *** SPARK
+    // If this source is video and it is not ready - do not upload the image data. 
+    // Without this check there will be black screen issues in Firefox and Edge after most video seek operations.
+    if(source instanceof HTMLVideoElement && source.readyState !== source.HAVE_ENOUGH_DATA) {
+        var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+        if(isChrome) {
+            // Chrome handles seeks graciously so this workaround is not needed            
+        }
+        else {
+            return; // skip gl.texImage2D
+        }
+    }
+    
+    
+    
+    
+    
+    
