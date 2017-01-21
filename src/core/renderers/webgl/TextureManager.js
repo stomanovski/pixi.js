@@ -74,7 +74,10 @@ TextureManager.prototype.updateTexture = function(texture)
         else
         {
             glTexture = new GLTexture(this.gl);
-            glTexture.premultiplyAlpha = true;
+            // *** SPARK
+            // Disable premultiplyAlpha for video textures; This is a temporary workaround for a Firefox bug which 
+            // causes videos to be sometimes upside-down. TODO: remove the workaround after Mozilla fixes the bug
+            glTexture.premultiplyAlpha = (texture.source instanceof HTMLVideoElement ) ? false : true;
             glTexture.upload(texture.source);
         }
 
