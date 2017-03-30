@@ -374,6 +374,8 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
         renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
         renderTarget.setFrame(renderTexture.frame);
         
+        // *** SPARK
+        // respect the value in backgroundColor
         renderTarget.clearColor[0] = this._backgroundColorRgba[0];
         renderTarget.clearColor[1] = this._backgroundColorRgba[1];
         renderTarget.clearColor[2] = this._backgroundColorRgba[2];
