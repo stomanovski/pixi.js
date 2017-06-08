@@ -408,7 +408,7 @@ Sprite3dRenderer.prototype.flush = function ()
 
         var matrix = sprite.projectionMatrix || this.projectionPerspectiveMatrix;
         shader.uniforms.projectionMatrix3d = matrix;
-        shader.uniforms.blackIsAlpha = 0;
+        shader.uniforms.blackIsAlpha = sprite.blackIsAlpha;
 
         var start = i;
         var batchSize = 1;

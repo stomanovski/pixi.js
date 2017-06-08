@@ -83,11 +83,31 @@ function Sprite3dShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, c
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
 
         '   if(blackIsAlpha) {',
-        '       if(gl_FragColor.r < 0.01 && gl_FragColor.g < 0.01 && gl_FragColor.b < 0.01)',
-        '           discard;',
+        '       if(gl_FragColor.r < 0.1 && gl_FragColor.g < 0.1 && gl_FragColor.b < 0.1)',
+        '           gl_FragColor.a = 0.0;',
         '   }',
         '}'
     ].join('\n');
+
+    
+//    fragmentSrc = fragmentSrc || [
+//        'precision lowp float;',
+//
+//        'varying vec2 vTextureCoord;',
+//        'varying vec4 vColor;',
+//
+//        'uniform sampler2D uSampler;',
+//        'uniform bool blackIsAlpha;',
+//
+//        'void main(void){',
+//        '   vec4 color = texture2D(uSampler, vTextureCoord) * vColor;',
+//        '   if(blackIsAlpha) {',
+//        '       color.a = (color.r + color.r + color.b + color.g + color.g + color.g) / 6.0;', // very rough estimate of brightness
+//        '   }',
+//        
+//        '   gl_FragColor = color;',
+//        '}'
+//    ].join('\n');
 
     Shader.call(this, shaderManager, vertexSrc, fragmentSrc, uniforms, attributes);
 }
